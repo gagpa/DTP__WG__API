@@ -4,7 +4,7 @@ from app.components.work_group import WorkGroupComponent
 from . import requests as rq
 from . import responses as rs
 
-router = APIRouter(tags=['WorkGroup'], prefix='/working_group')
+router = APIRouter(tags=['WorkGroup'], prefix='/work_group')
 
 
 @router.get('/all',
