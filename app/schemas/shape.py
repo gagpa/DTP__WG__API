@@ -60,11 +60,11 @@ class ShapeFromDb(Shape):
 
 
 class ShapeToDb(Shape):
-    type: int
 
     def insert(self, wg_pk: int) -> ShapeFromDb:
         """Insert data in DB"""
         s = Session()
+        shape_type = s.query(m.ShapeType).filter_by(name=self.type.value).one()
         shape = m.Shape(name=self.name,
                         color=self.color,
                         width=self.width,
@@ -72,7 +72,7 @@ class ShapeToDb(Shape):
                         border_color=self.border_color,
                         coordinates=self.coordinates,
                         opacity=self.opacity,
-                        shape_type_id=self.type,
+                        shape_type_id=shape_type.id,
                         work_group_id=wg_pk
                         )
         s.add(shape)
@@ -95,7 +95,8 @@ class ShapeToDb(Shape):
         else:
             shape = m.Shape()
             shape.work_group_id = pk
-        shape.shape_type_id = self.type
+        shape_type = Session().query(m.ShapeType).filter_by(name=self.type.value).one()
+        shape.shape_type_id = shape_type.id
         shape.name = self.name
         shape.coordinates = self.coordinates
         shape.color = self.color

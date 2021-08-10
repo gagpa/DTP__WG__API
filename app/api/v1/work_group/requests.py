@@ -15,7 +15,7 @@ class WorkGroupRequest(WorkGroupToDB):
                 'end_realization': '2021-10-01',
                 'shapes': [
                     {
-                        'type': 1,
+                        'type': 'Polygon',
                         'name': 'Crossroad',
                         'coordinates': [[15.5353, 45.4434], [15.5253, 45.4436], [15.5353, 45.4434]],
                         'color': '819FF7',
@@ -25,7 +25,7 @@ class WorkGroupRequest(WorkGroupToDB):
                         'opacity': 1,
                     },
                     {
-                        'type': 2,
+                        'type': 'Point',
                         'name': 'Crossroad',
                         'coordinates': [[15.5353, 45.4434], [15.5253, 45.4436], [15.5353, 45.4434]],
                         'color': 'DF0174',
