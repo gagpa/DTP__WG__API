@@ -15,6 +15,7 @@ services:
       - .:/app/
     command: python main.py
     tty: True
+    hostname: "dtp-wg-api"
     depends_on:
       - psql
       - migration
@@ -37,3 +38,7 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
       - POSTGRES_DB=${DB_NAME}
+networks:
+  default:
+    external: true
+    name: dtp
