@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, Depends
 
 from app.components.work_group import WorkGroupComponent
@@ -17,6 +19,23 @@ async def read_all():
     return rs.WorkGroupsResponse(data=rs.WorkGroupsData(work_groups=wgs))
 
 
+@router.post('/',
+             description='Filter all'
+             )
+async def filter_all(wg_filter: Optional[rq.WorkGroupFilterRequest] = None):
+    """Вернуть все рабочии группы"""
+    is_default = False
+    if not wg_filter:
+        is_default = True
+        wg_filter = rq.WorkGroupFilterRequest.default()
+    wgs = WorkGroupComponent().filter(wg_filter)
+    if not is_default:
+        return rs.WorkGroupsResponse(data=rs.WorkGroupsData(work_groups=wgs))
+    return rs.WorkGroupsDefaultFilterResponse(data=rs.WorkGroupsDefaultFilterData(work_groups=wgs,
+                                                                                  config=wg_filter
+                                                                                  ))
+
+
 @router.get('/{pk}',
             response_model=rs.WorkGroupResponse,
             description='Read by pk'
@@ -27,7 +46,7 @@ async def read(pk: int):
     return rs.WorkGroupResponse(data=rs.WorkGroupData(work_group=wg))
 
 
-@router.post('/',
+@router.post('/create',
              response_model=rs.WorkGroupResponse,
              description='Create',
              status_code=201

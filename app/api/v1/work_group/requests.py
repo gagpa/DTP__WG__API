@@ -1,4 +1,4 @@
-from app.schemas.work_group import WorkGroupToDB, WorkGroupDelete
+from app.schemas.work_group import WorkGroupToDB, WorkGroupDelete, WorkGroupFilter
 
 
 class WorkGroupRequest(WorkGroupToDB):
@@ -37,6 +37,31 @@ class WorkGroupRequest(WorkGroupToDB):
                 ]
             }
         }
+
+
+class WorkGroupFilterRequest(WorkGroupFilter):
+    class Config:
+        schema_extra = {'example': {
+            'type': ['all'],
+            'status': ['all'],
+            'responsible': ['all'],
+            'start_protocol': ['2015-01-01', '2021-01-01'],
+            'end_protocol': ['2015-01-01', '2021-01-01'],
+            'start_realization': ['2015-01-01', '2021-01-01'],
+            'end_realization': ['2015-01-01', '2021-01-01'],
+        }
+        }
+
+    @classmethod
+    def default(cls):
+        return cls(type=['all'],
+                   status=['all'],
+                   responsible=['all'],
+                   start_protocol=['2015-01-01', '2021-01-01'],
+                   end_protocol=['2015-01-01', '2021-01-01'],
+                   start_realization=['2015-01-01', '2021-01-01'],
+                   end_realization=['2015-01-01', '2021-01-01']
+                   )
 
 
 def wg_delete(pk: int) -> WorkGroupDelete:

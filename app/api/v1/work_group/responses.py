@@ -3,7 +3,7 @@ from typing import List
 from pydantic import BaseModel
 
 from app.api.extenstions.response import SuccessResponse
-from app.schemas.work_group import WorkGroupShortFromDB, WorkGroupDataFromDB, WorkGroupDelete
+from app.schemas.work_group import WorkGroupShortFromDB, WorkGroupDataFromDB, WorkGroupDelete, WorkGroupFilter
 
 
 #
@@ -22,6 +22,10 @@ class WorkGroupDeleteData(BaseModel):
     message: str = 'Work group was delete'
 
 
+class WorkGroupsDefaultFilterData(WorkGroupsData):
+    config: WorkGroupFilter
+
+
 #
 # Responses
 #
@@ -35,3 +39,7 @@ class WorkGroupResponse(SuccessResponse):
 
 class WorkGroupDeleteResponse(SuccessResponse):
     data: WorkGroupDeleteData
+
+
+class WorkGroupsDefaultFilterResponse(SuccessResponse):
+    data: WorkGroupsDefaultFilterData

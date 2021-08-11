@@ -25,3 +25,7 @@ class WorkGroupComponent:
     def delete(self, wg: wg_sch.WorkGroupDelete):
         """Удалить событие"""
         wg.delete()
+
+    def filter(self, wg_filter: wg_sch.WorkGroupFilter) -> List[wg_sch.WorkGroupShortFromDB]:
+        """Отфильтровать"""
+        return wg_filter.filter()
