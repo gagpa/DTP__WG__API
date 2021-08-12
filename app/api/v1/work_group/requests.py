@@ -48,10 +48,8 @@ class WorkGroupFilterRequest(WorkGroupFilter):
             'type': ['all'],
             'status': ['all'],
             'responsible': ['all'],
-            'start_protocol': [start_date, end_date],
-            'end_protocol': [start_date, end_date],
-            'start_realization': [start_date, end_date],
-            'end_realization': [start_date, end_date],
+            'protocol': [start_date, end_date],
+            'realization': [start_date, end_date],
         }
         }
 
@@ -63,10 +61,8 @@ class WorkGroupFilterRequest(WorkGroupFilter):
         return cls(type=['all'],
                    status=['all'],
                    responsible=['all'],
-                   start_protocol=[start_date, end_date],
-                   end_protocol=[start_date, end_date],
-                   start_realization=[start_date, end_date],
-                   end_realization=[start_date, end_date],
+                   protocol=[start_date, end_date],
+                   realization=[start_date, end_date],
                    )
 
 

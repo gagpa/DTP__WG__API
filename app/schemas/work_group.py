@@ -167,10 +167,8 @@ class WorkGroupFilter(BaseModel):
     type: List[Union[int, str]] = ['all']
     status: List[Union[int, str]] = ['all']
     responsible: List[Union[int, str]] = ['all']
-    start_protocol: List[date]
-    end_protocol: List[date]
-    start_realization: List[date]
-    end_realization: List[date]
+    protocol: List[date]
+    realization: List[date]
 
     def filter(self) -> List[WorkGroupShortFromDB]:
         s = Session()
@@ -181,10 +179,10 @@ class WorkGroupFilter(BaseModel):
             filter_obj.append(m.WorkGroup.status_id.in_(self.status))
         if self.responsible != ['all']:
             filter_obj.append(m.WorkGroup.responsible_id.in_(self.responsible))
-        filter_obj.append(m.WorkGroup.start_protocol.between(*self.start_protocol))
-        filter_obj.append(m.WorkGroup.end_protocol.between(*self.end_protocol))
-        filter_obj.append(m.WorkGroup.start_realization.between(*self.start_realization))
-        filter_obj.append(m.WorkGroup.end_realization.between(*self.end_realization))
+        filter_obj.append(m.WorkGroup.start_protocol >= self.protocol[0])
+        filter_obj.append(m.WorkGroup.end_protocol <= self.protocol[1])
+        filter_obj.append(m.WorkGroup.start_realization >= self.realization[0])
+        filter_obj.append(m.WorkGroup.end_realization <= self.realization[1])
         query = s.query(m.WorkGroup).filter(*filter_obj)
         wgs = [WorkGroupShortFromDB(id=wg.id,
                                     shapes=[ShapeFromDb.by_orm(shape) for shape in wg.shapes]
