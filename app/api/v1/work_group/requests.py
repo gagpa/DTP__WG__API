@@ -1,5 +1,5 @@
 from app.schemas.work_group import WorkGroupToDB, WorkGroupDelete, WorkGroupFilter
-
+from datetime import datetime
 
 class WorkGroupRequest(WorkGroupToDB):
     class Config:
@@ -41,26 +41,32 @@ class WorkGroupRequest(WorkGroupToDB):
 
 class WorkGroupFilterRequest(WorkGroupFilter):
     class Config:
+        now = datetime.now()
+        start_date = f'{now.year}-01-01'
+        end_date = now.strftime('%Y-%m-%d')
         schema_extra = {'example': {
             'type': ['all'],
             'status': ['all'],
             'responsible': ['all'],
-            'start_protocol': ['2015-01-01', '2021-01-01'],
-            'end_protocol': ['2015-01-01', '2021-01-01'],
-            'start_realization': ['2015-01-01', '2021-01-01'],
-            'end_realization': ['2015-01-01', '2021-01-01'],
+            'start_protocol': [start_date, end_date],
+            'end_protocol': [start_date, end_date],
+            'start_realization': [start_date, end_date],
+            'end_realization': [start_date, end_date],
         }
         }
 
     @classmethod
     def default(cls):
+        now = datetime.now()
+        start_date = f'{now.year}-01-01'
+        end_date = now.strftime('%Y-%m-%d')
         return cls(type=['all'],
                    status=['all'],
                    responsible=['all'],
-                   start_protocol=['2015-01-01', '2021-01-01'],
-                   end_protocol=['2015-01-01', '2021-01-01'],
-                   start_realization=['2015-01-01', '2021-01-01'],
-                   end_realization=['2015-01-01', '2021-01-01']
+                   start_protocol=[start_date, end_date],
+                   end_protocol=[start_date, end_date],
+                   start_realization=[start_date, end_date],
+                   end_realization=[start_date, end_date],
                    )
 
 
