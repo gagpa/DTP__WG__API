@@ -19,7 +19,7 @@ class ShapeFromDb(BaseModel):
     map_id: str
     name: str
     type: TypeGeometry
-    coordinates: Union[List[List[float]], List[float]]
+    coordinates: Union[List[List[List[float]]], List[List[float]], List[float]]
     color: str
     width: int
     border_color: str
@@ -48,7 +48,7 @@ class ShapeToDb(BaseModel):
     map_id: Optional[str] = None
     type: TypeGeometry
     name: str
-    coordinates: Union[List[List[float]], List[float]]
+    coordinates: Union[List[List[List[float]]], List[List[float]], List[float]]
     color: str
     width: int
     border_color: str
