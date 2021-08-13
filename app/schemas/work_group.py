@@ -5,19 +5,7 @@ from pydantic import BaseModel
 
 from app import models as m
 from app.db import Session
-from .shape import Shape, ShapeToDb, ShapeFromDb
-
-
-class WorkGroupData(BaseModel):
-    """Data of WorkGroup"""
-    type: str
-    status: str
-    responsible: str
-    description: str
-    start_protocol: date
-    end_protocol: date
-    start_realization: date
-    end_realization: date
+from .shape import ShapeToDb, ShapeFromDb
 
 
 class WorkGroupDelete(BaseModel):
@@ -32,18 +20,8 @@ class WorkGroupDelete(BaseModel):
         s.close()
 
 
-class WorkGroup(WorkGroupData):
-    """Full data of WorkGroup"""
-    shapes: List[Shape]
-
-
-class WorkGroupShort(BaseModel):
-    """Short data of WorkGroup"""
-    shapes: List[Shape]
-
-
-class WorkGroupShortFromDB(WorkGroupShort):
-    id: str
+class WorkGroupGeoFromDB(BaseModel):
+    id: int
     shapes: List[ShapeFromDb]
 
     class Config:
@@ -60,17 +38,18 @@ class WorkGroupShortFromDB(WorkGroupShort):
         return wgs
 
 
-class WorkGroupFromDB(WorkGroup):
+class WorkGroupFromDb(BaseModel):
     """WorkGroup from DB"""
-    id: str
-
-    class Config:
-        orm_mode = True
-
-
-class WorkGroupDataFromDB(WorkGroupData):
-    """WorkGroup from DB"""
-    id: str
+    id: int
+    type: int
+    status: int
+    responsible: int
+    description: str
+    shapes: List[ShapeFromDb]
+    end_protocol: date
+    end_realization: date
+    start_protocol: date
+    start_realization: date
 
     class Config:
         orm_mode = True
@@ -81,26 +60,42 @@ class WorkGroupDataFromDB(WorkGroupData):
         query = s.query(m.WorkGroup).filter_by(id=pk)
         wg = query.one()
         wg = cls(id=wg.id,
-                 type=wg.type.name,
-                 status=wg.status.name,
-                 responsible=wg.responsible.name,
+                 type=wg.type.id,
+                 status=wg.status.id,
+                 responsible=wg.responsible.id,
                  description=wg.description,
                  start_protocol=wg.start_protocol,
                  end_protocol=wg.end_protocol,
                  start_realization=wg.start_realization,
                  end_realization=wg.end_realization,
+                 shapes=[ShapeFromDb(id=item.id,
+                                     map_id=item.map_id,
+                                     type=item.shape_type.name,
+                                     name=item.name,
+                                     coordinates=item.coordinates,
+                                     color=item.color,
+                                     width=item.width,
+                                     border_color=item.color,
+                                     border_width=item.border_width,
+                                     opacity=item.opacity,
+                                     ) for item in wg.shapes]
                  )
         s.close()
         return wg
 
 
-class WorkGroupToDB(WorkGroup):
-    type: int
-    status: int
+class WorkGroupToDb(BaseModel):
+    description: str
+    end_protocol: date
+    end_realization: date
     responsible: int
     shapes: List[ShapeToDb]
+    start_protocol: date
+    start_realization: date
+    status: int
+    type: int
 
-    def insert(self) -> WorkGroupFromDB:
+    def insert(self) -> WorkGroupFromDb:
         s = Session()
         wg = m.WorkGroup(description=self.description,
                          start_protocol=self.start_protocol,
@@ -115,10 +110,10 @@ class WorkGroupToDB(WorkGroup):
         s.commit()
         shapes = [shape.insert(wg.id) for shape in self.shapes]
 
-        wg = WorkGroupFromDB(id=wg.id,
-                             type=wg.type.name,
-                             status=wg.status.name,
-                             responsible=wg.responsible.name,
+        wg = WorkGroupFromDb(id=wg.id,
+                             type=wg.type.id,
+                             status=wg.status.id,
+                             responsible=wg.responsible.id,
                              description=wg.description,
                              start_protocol=wg.start_protocol,
                              end_protocol=wg.end_protocol,
@@ -128,7 +123,7 @@ class WorkGroupToDB(WorkGroup):
         s.close()
         return wg
 
-    def update(self, pk) -> WorkGroupFromDB:
+    def update(self, pk) -> WorkGroupFromDb:
         wg = Session().query(m.WorkGroup).get(pk)
         wg.type_id = self.type
         wg.status_id = self.status
@@ -150,10 +145,10 @@ class WorkGroupToDB(WorkGroup):
             else:
                 updated_shape = shape.update(wg.id, is_update=False)
             shapes.append(updated_shape)
-        wg = WorkGroupFromDB(id=wg.id,
-                             type=wg.type.name,
-                             status=wg.status.name,
-                             responsible=wg.responsible.name,
+        wg = WorkGroupFromDb(id=wg.id,
+                             type=wg.type.id,
+                             status=wg.status.id,
+                             responsible=wg.responsible.id,
                              description=wg.description,
                              start_protocol=wg.start_protocol,
                              end_protocol=wg.end_protocol,
@@ -170,7 +165,7 @@ class WorkGroupFilter(BaseModel):
     protocol: List[date]
     realization: List[date]
 
-    def filter(self) -> List[WorkGroupShortFromDB]:
+    def filter(self) -> List[WorkGroupGeoFromDB]:
         s = Session()
         filter_obj = []
         if self.type != ['all']:
@@ -184,8 +179,8 @@ class WorkGroupFilter(BaseModel):
         filter_obj.append(m.WorkGroup.start_realization >= self.realization[0])
         filter_obj.append(m.WorkGroup.end_realization <= self.realization[1])
         query = s.query(m.WorkGroup).filter(*filter_obj)
-        wgs = [WorkGroupShortFromDB(id=wg.id,
-                                    shapes=[ShapeFromDb.by_orm(shape) for shape in wg.shapes]
-                                    ) for wg in query.all()]
+        wgs = [WorkGroupGeoFromDB(id=wg.id,
+                                  shapes=[ShapeFromDb.by_orm(shape) for shape in wg.shapes]
+                                  ) for wg in query.all()]
         s.close()
         return wgs

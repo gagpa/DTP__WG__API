@@ -1,7 +1,9 @@
-from app.db import Base
+from datetime import datetime
+
 import sqlalchemy as sql
 from sqlalchemy import orm
-from datetime import datetime
+
+from app.db import Base
 
 
 class Shape(Base):
@@ -10,6 +12,7 @@ class Shape(Base):
 
     id = sql.Column(sql.Integer, primary_key=True)
 
+    map_id = sql.Column(sql.VARCHAR(50), nullable=False)
     name = sql.Column(sql.VARCHAR(500), nullable=False)
     color = sql.Column(sql.VARCHAR(6), nullable=False)
     width = sql.Column(sql.Integer, nullable=False)

@@ -3,18 +3,18 @@ from typing import List
 from pydantic import BaseModel
 
 from app.api.extenstions.response import SuccessResponse
-from app.schemas.work_group import WorkGroupShortFromDB, WorkGroupDataFromDB, WorkGroupDelete, WorkGroupFilter
+from app.schemas.work_group import WorkGroupGeoFromDB, WorkGroupFromDb, WorkGroupDelete, WorkGroupFilter
 
 
 #
 # Data
 #
 class WorkGroupsData(BaseModel):
-    work_groups: List[WorkGroupShortFromDB]
+    work_groups: List[WorkGroupGeoFromDB]
 
 
 class WorkGroupData(BaseModel):
-    work_group: WorkGroupDataFromDB
+    work_group: WorkGroupFromDb
 
 
 class WorkGroupDeleteData(BaseModel):
