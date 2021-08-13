@@ -24,7 +24,7 @@ class ShapeFromDb(BaseModel):
     width: int
     border_color: str
     border_width: int
-    opacity: int = Field(..., ge=0, le=1)
+    opacity: float = Field(..., ge=0, le=1)
 
     class Config:
         orm_mode = True
@@ -53,7 +53,7 @@ class ShapeToDb(BaseModel):
     width: int
     border_color: str
     border_width: int
-    opacity: int = Field(..., ge=0, le=1)
+    opacity: float = Field(..., ge=0, le=1)
 
     def insert(self, wg_pk: int) -> ShapeFromDb:
         """Insert data in DB"""
