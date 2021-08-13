@@ -46,9 +46,8 @@ class WorkGroupFromDb(BaseModel):
     responsible: int
     description: str
     shapes: List[ShapeFromDb]
-    end_protocol: date
     end_realization: date
-    start_protocol: date
+    protocol: date
     start_realization: date
 
     class Config:
@@ -64,8 +63,7 @@ class WorkGroupFromDb(BaseModel):
                  status=wg.status.id,
                  responsible=wg.responsible.id,
                  description=wg.description,
-                 start_protocol=wg.start_protocol,
-                 end_protocol=wg.end_protocol,
+                 protocol=wg.protocol,
                  start_realization=wg.start_realization,
                  end_realization=wg.end_realization,
                  shapes=[ShapeFromDb(id=item.id,
@@ -86,11 +84,10 @@ class WorkGroupFromDb(BaseModel):
 
 class WorkGroupToDb(BaseModel):
     description: str
-    end_protocol: date
     end_realization: date
     responsible: int
     shapes: List[ShapeToDb]
-    start_protocol: date
+    protocol: date
     start_realization: date
     status: int
     type: int
@@ -98,8 +95,7 @@ class WorkGroupToDb(BaseModel):
     def insert(self) -> WorkGroupFromDb:
         s = Session()
         wg = m.WorkGroup(description=self.description,
-                         start_protocol=self.start_protocol,
-                         end_protocol=self.end_protocol,
+                         protocol=self.protocol,
                          start_realization=self.start_realization,
                          end_realization=self.end_realization,
                          type_id=self.type,
@@ -115,8 +111,7 @@ class WorkGroupToDb(BaseModel):
                              status=wg.status.id,
                              responsible=wg.responsible.id,
                              description=wg.description,
-                             start_protocol=wg.start_protocol,
-                             end_protocol=wg.end_protocol,
+                             protocol=wg.protocol,
                              start_realization=wg.start_realization,
                              end_realization=wg.end_realization,
                              shapes=shapes)
@@ -129,8 +124,7 @@ class WorkGroupToDb(BaseModel):
         wg.status_id = self.status
         wg.responsible_id = self.responsible
         wg.description = self.description
-        wg.start_protocol = self.start_protocol
-        wg.end_protocol = self.end_protocol
+        wg.protocol = self.protocol
         wg.start_realization = self.start_realization
         wg.end_realization = self.end_realization
         Session().commit()
@@ -150,8 +144,7 @@ class WorkGroupToDb(BaseModel):
                              status=wg.status.id,
                              responsible=wg.responsible.id,
                              description=wg.description,
-                             start_protocol=wg.start_protocol,
-                             end_protocol=wg.end_protocol,
+                             protocol=wg.protocol,
                              start_realization=wg.start_realization,
                              end_realization=wg.end_realization,
                              shapes=shapes)
@@ -174,8 +167,7 @@ class WorkGroupFilter(BaseModel):
             filter_obj.append(m.WorkGroup.status_id.in_(self.status))
         if self.responsible != ['all']:
             filter_obj.append(m.WorkGroup.responsible_id.in_(self.responsible))
-        filter_obj.append(m.WorkGroup.start_protocol >= self.protocol[0])
-        filter_obj.append(m.WorkGroup.end_protocol <= self.protocol[1])
+        filter_obj.append(m.WorkGroup.protocol.between(*self.protocol))
         filter_obj.append(m.WorkGroup.start_realization >= self.realization[0])
         filter_obj.append(m.WorkGroup.end_realization <= self.realization[1])
         query = s.query(m.WorkGroup).filter(*filter_obj)

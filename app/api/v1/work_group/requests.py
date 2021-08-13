@@ -11,8 +11,7 @@ class WorkGroupRequest(WorkGroupToDb):
                 'status': 1,
                 'responsible': 1,
                 'description': 'Repair road',
-                'start_protocol': '2021-07-01',
-                'end_protocol': '2021-10-01',
+                'protocol': '2021-07-01',
                 'start_realization': '2021-07-01',
                 'end_realization': '2021-10-01',
                 'shapes': [

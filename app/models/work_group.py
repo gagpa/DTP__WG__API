@@ -11,8 +11,7 @@ class WorkGroup(Base):
     id = sql.Column(sql.Integer, primary_key=True)
 
     description = sql.Column(sql.VARCHAR(1000), nullable=False)
-    start_protocol = sql.Column(sql.DateTime, nullable=False)
-    end_protocol = sql.Column(sql.DateTime, nullable=False)
+    protocol = sql.Column(sql.DateTime, nullable=False)
     start_realization = sql.Column(sql.DateTime, nullable=False)
     end_realization = sql.Column(sql.DateTime, nullable=False)
 
