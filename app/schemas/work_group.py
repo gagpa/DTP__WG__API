@@ -1,7 +1,6 @@
 from datetime import date
-from typing import List, Union
-
 from pydantic import BaseModel
+from typing import List, Union
 
 from app import models as m
 from app.db import Session
@@ -128,27 +127,23 @@ class WorkGroupToDb(BaseModel):
         wg.start_realization = self.start_realization
         wg.end_realization = self.end_realization
         Session().commit()
-        shapes = []
-        if len(self.shapes) < len(wg.shapes):
-            for item in wg.shapes[:len(self.shapes) + 1]:
-                Session.delete(item)
+        wg = Session().query(m.WorkGroup).get(pk)
+        new_shape_ids = {str(shape.map_id) for shape in self.shapes}
+
+        for shape in tuple(filter(lambda shape: str(shape.id) not in new_shape_ids, wg.shapes)):
+            Session.delete(shape)
         Session().commit()
-        for i, shape in enumerate(self.shapes):
-            if i + 1 < len(wg.shapes):
-                updated_shape = shape.update(wg.shapes[i].id, is_update=True)
+        wg = Session().query(m.WorkGroup).get(pk)
+        shape_ids = {str(shape.id) for shape in wg.shapes}
+
+        for shape in self.shapes:
+            if shape.map_id in shape_ids:
+                shape.update()
             else:
-                updated_shape = shape.update(wg.id, is_update=False)
-            shapes.append(updated_shape)
-        wg = WorkGroupFromDb(id=wg.id,
-                             type=wg.type.id,
-                             status=wg.status.id,
-                             responsible=wg.responsible.id,
-                             description=wg.description,
-                             protocol=wg.protocol,
-                             start_realization=wg.start_realization,
-                             end_realization=wg.end_realization,
-                             shapes=shapes)
-        return wg
+                shape.insert(pk)
+        Session().commit()
+
+        return WorkGroupFromDb.by_pk(pk)
 
 
 class WorkGroupFilter(BaseModel):

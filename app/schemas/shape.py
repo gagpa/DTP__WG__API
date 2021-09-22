@@ -1,7 +1,6 @@
 from enum import Enum
-from typing import List, Union, Optional
-
 from pydantic import BaseModel, Field
+from typing import List, Union, Optional
 
 from app import models as m
 from app.db import Session
@@ -85,13 +84,8 @@ class ShapeToDb(BaseModel):
                             )
         return shape
 
-    def update(self, pk: str, is_update: bool = True) -> ShapeFromDb:
-        if is_update:
-            shape = Session().query(m.Shape).get(pk)
-        else:
-            shape = m.Shape()
-            shape.work_group_id = pk
-            shape.map_id = self.map_id
+    def update(self) -> ShapeFromDb:
+        shape = Session().query(m.Shape).get(self.map_id)
         shape_type = Session().query(m.ShapeType).filter_by(name=self.type.value).one()
         shape.shape_type_id = shape_type.id
         shape.name = self.name
@@ -101,8 +95,7 @@ class ShapeToDb(BaseModel):
         shape.border_color = self.border_color
         shape.border_width = self.border_width
         shape.opacity = self.opacity
-        if not is_update:
-            Session().add(shape)
+        Session().add(shape)
         Session().commit()
         return ShapeFromDb(id=shape.id,
                            map_id=shape.map_id,

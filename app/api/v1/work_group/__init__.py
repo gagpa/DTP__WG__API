@@ -36,16 +36,6 @@ async def filter_all(wg_filter: Optional[rq.WorkGroupFilterRequest] = None):
                                                                                   ))
 
 
-@router.get('/{pk}',
-            response_model=rs.WorkGroupResponse,
-            description='Read by pk'
-            )
-async def read(pk: int):
-    """Вернуть полную информацию о рабочей группе"""
-    wg = WorkGroupComponent().read(pk)
-    return rs.WorkGroupResponse(data=rs.WorkGroupData(work_group=wg))
-
-
 @router.post('/create',
              response_model=rs.WorkGroupResponse,
              description='Create',
@@ -64,6 +54,16 @@ async def create(wg: rq.WorkGroupRequest):
 async def update(pk: int, wg: rq.WorkGroupRequest):
     """Вернуть обновить рабочую группу"""
     wg = WorkGroupComponent().update(pk, wg)
+    return rs.WorkGroupResponse(data=rs.WorkGroupData(work_group=wg))
+
+
+@router.get('/{pk}',
+            response_model=rs.WorkGroupResponse,
+            description='Read by pk'
+            )
+async def read(pk: int):
+    """Вернуть полную информацию о рабочей группе"""
+    wg = WorkGroupComponent().read(pk)
     return rs.WorkGroupResponse(data=rs.WorkGroupData(work_group=wg))
 
 
