@@ -17,8 +17,9 @@ services:
     tty: True
     hostname: "dtp-wg-api"
     depends_on:
-      - psql
       - migration
+      - psql
+
   migration:
     container_name: DTP__WG__migration
     build:
@@ -29,15 +30,15 @@ services:
     image: dtp__wg__migration:1.0
     env_file: .env
     command: bash -c "alembic stamp head && alembic revision --autogenerate -m "update" && alembic upgrade head"
+    depends_on:
+      - psql
+
   psql:
     restart: always
     container_name: "DTP__WG__PSQL"
     image: postgres:13.2-alpine
     env_file: .env
-    environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASS}
-      - POSTGRES_DB=${DB_NAME}
+
 networks:
   default:
     external: true
